@@ -1,0 +1,47 @@
+
+<div id="articles">
+{{#each articles}}
+<article>
+    <h1>{{title}}</h1>
+    <p>{{content}}</p>
+</article>
+{{/each}}
+</div>
+
+<div>
+    <button id="loadMore">加载更多</button>
+    <button hidden id="noMore">沒有更多</button>
+</div>
+
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+    {
+        let page = 1
+        $button = $('#loadMore')
+        $button.on('click',function(){
+            $.get(`/paged?page=${page+1}`,(res)=>{
+                let {articles} = res
+                articles.forEach(function(articles,index){
+                    let $article = $(`<article><h1>${articles.title}</h1><p>${articles.content}</p></article>`)
+                    $article.appendTo($('#articles'))
+                })
+                page += 1
+                if(res.currentPage >= res.totalPage){
+                    $button.attr('hidden',true)
+                    $('#noMore').attr('hidden',false).attr('disabled',true)
+                }
+            })
+        }) 
+
+        $(window).on('scroll',function(){
+            var viewBottom = document.body.scrollTop + document.documentElement.clientHeight
+            //滚动的高度加上视口高度
+            var delta = loadMore.getBoundingClientRect().top - document.documentElement.clientHeight 
+
+            if(delta < 100){
+                loadMore.click()
+            }
+        })
+    }
+
+</script>
